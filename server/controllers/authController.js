@@ -8,14 +8,14 @@ export const register = async (req,res)=>{
     const {name,email,password}=req.body;
     if(!name || !email || !password)
     {
-        return res.json({sucess:false,message:"Missing details"})
+        return res.json({success:false,message:"Missing details"})
     }
     try {
         
         const existingUser = await userModel.findOne({email});
         if(existingUser)
         {
-            return res.json({sucess:false,message:"User Already Exists"});
+            return res.json({success:false,message:"User Already Exists"});
         }
 
 
@@ -45,10 +45,10 @@ export const register = async (req,res)=>{
 
         await transporter.sendMail(mailOptions);
 
-        return res.json({sucess:true});
+        return res.json({success:true});
         
     } catch (error) {
-        res.json({sucess:false,message:error.message})
+        res.json({success:false,message:error.message})
     }
 }
 
@@ -57,19 +57,19 @@ export const login = async (req,res)=>{
 
     if(!email || !password)
     {
-        res.json({sucess:false,message:"Email and password are required"});
+        res.json({success:false,message:"Email and password are required"});
     }
 
     try {
         const user = await userModel.findOne({email});
         if(!user)
         {
-            return res.json({sucess:false,message:"Invalid message "})
+            return res.json({success:false,message:"Invalid message "})
         }
         const isMatch = await bcrypt.compare(password,user.password)
         if(!isMatch)
         {
-            return res.json({sucess:false,message:"Invalid password"});
+            return res.json({success:false,message:"Invalid password"});
         }
 
         const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:'7d'});
@@ -81,10 +81,10 @@ export const login = async (req,res)=>{
             maxAge:7*24*60*60*1000
         }
         )
-        return res.json({sucess:true});
+        return res.json({success:true});
 
     } catch (error) {
-        return res.json({sucess:false,message:error.message});
+        return res.json({success:false,message:error.message});
     }
 }
 
@@ -95,9 +95,9 @@ export const logout = async (req,res)=>{
             secure:process.env.NODE_ENV === 'production',
             sameSite:process.env.NODE_ENV==='production' ? 'none':'strict'})
 
-        return res.json({sucess:true,message:"Logged Out"})
+        return res.json({success:true,message:"Logged Out"})
     } catch (error) {
-        return res.json({sucess:false,message:error.message});
+        return res.json({success:false,message:error.message});
     }
 }
 
@@ -110,7 +110,7 @@ export const sendVerifyOtp = async (req,res)=>{
 
         if(user.isAccountVerified)
         {
-            return res.json({sucess:false,message:"Account already verified"});
+            return res.json({success:false,message:"Account already verified"});
         }
 
         const otp = String(Math.floor(100000 + Math.random()*90000));
@@ -128,14 +128,14 @@ export const sendVerifyOtp = async (req,res)=>{
         await transporter.sendMail(mailOptions);
 
         return res.json({
-            sucess:true,
+            success:true,
             message:'sucessfully verified'
         });
 
     }
     catch(error)
     {
-        return res.json({sucess:false,message:error.message});
+        return res.json({success:false,message:error.message});
     }
 }
 
@@ -169,9 +169,9 @@ export const verifyEmail = async (req,res)=>{
         user.verifyOtp='';
         user.verifyOtpExpireAt=0;
         await user.save();
-        return res.json({sucess:true,message:"Email Verified sucessfully "});
+        return res.json({success:true,message:"Email Verified sucessfully "});
     } catch (error) {
-        return res.json({sucess:false,message:error.message});
+        return res.json({success:false,message:error.message});
     }
 }
 
@@ -179,10 +179,10 @@ export const isAuthenticated = async (req,res)=>{
 
     try {
         
-        return res.json({suceess:true});
+        return res.json({success:true});
 
     } catch (error) {
-        return res.json({sucess:false,message:error.message});
+        return res.json({success:false,message:error.message});
     }
 
 }
@@ -192,7 +192,7 @@ export const sendResetOtp = async (req,res)=>{
 
     if(!email)
     {
-        return res.json({sucess:false,message:"Email is Required"});
+        return res.json({success:false,message:"Email is Required"});
     }
 
     try 
@@ -200,7 +200,7 @@ export const sendResetOtp = async (req,res)=>{
         const user = await userModel.findOne({email});
         if(!user)
         {
-            return res.json({sucess:false,message:"User not found"});
+            return res.json({success:false,message:"User not found"});
         }
 
         const otp = String(Math.floor(100000 + Math.random()*90000));
@@ -218,13 +218,13 @@ export const sendResetOtp = async (req,res)=>{
         await transporter.sendMail(mailOptions);
         
         return res.json({
-            suceess:true,
+            success:true,
             message:"otp sent to your email"
         });
     }
     catch (error) 
     {
-        return res.json({sucess:false,message:error.message});
+        return res.json({success:false,message:error.message});
     }
 }
 
@@ -257,7 +257,7 @@ export const resetPassword = async (req,res)=>{
         if(user.resetOtpExpireAt < Date.now())
         {
             return res.json({
-                suceess:false,
+                success:false,
                 message:"otp Expired"
             });
         }
@@ -269,10 +269,10 @@ export const resetPassword = async (req,res)=>{
         await user.save();
         
         return res.json({
-            sucess:true,
+            success:true,
             message:"Password has been reset sucessfully "
         });
     } catch (error) {
-        return res.json({sucess:false,message:error.message});
+        return res.json({success:false,message:error.message});
     }
 }

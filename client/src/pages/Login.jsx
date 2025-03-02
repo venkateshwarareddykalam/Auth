@@ -25,7 +25,6 @@ const Login = () => {
           if(data.success)
           {
             setIsLoggedin(true)
-            
             getUserData()
             navigate('/')
           }
@@ -36,7 +35,7 @@ const Login = () => {
         }
         else
         {
-          const {data} = await axios.post('http://localhost:4000/api/auth/login',{email,password})
+          const {data} = await axios.post(backendUrl+'/api/auth/login',{email,password})
           if(data.success)
           {
             setIsLoggedin(true)
@@ -45,7 +44,7 @@ const Login = () => {
           }
           else
           {
-            console.log("login failed "+data.message)
+            
             toast.error(data.message)
           }
         }
